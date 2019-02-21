@@ -16,7 +16,13 @@ public class PC_Controller : MonoBehaviour {
 
     private void Update() {
 
-        movement.Move(Input.GetAxis("Horizontal"));
+        if (Input.GetKey(KeyCode.LeftShift)){
+            movement.Move(Input.GetAxis("Horizontal"), true);
+        }
+        else {
+            movement.Move(Input.GetAxis("Horizontal"), false);
+        }
+        movement.Climb(Input.GetAxis("Vertical"));
         if (Input.GetButtonDown("Jump")) {
             movement.Jump();
             GetComponent<LineRenderer>().enabled = false;

@@ -3,20 +3,30 @@
 public class Movement : MonoBehaviour {
 
     public float moveSpeed;
-    public float jumpForce;
+    public float moveSpeed_2X;
+    public float jumpForce_haveHead;
+    public float jumpForce_NotHaveHead;
+    public float BoostForce_forJump;
     public float radCir;
     public float climbSpeed;
     public Transform circleTarget;
     public LayerMask all_but_Player; // Все слои кроме слоя игрока для поиска вокруг объектов
+    private bool isBoost;
     
     void Start () {
 		
 	}
 
-    public void Move(float ax) { // Движение игрока, "ax" - это направление например если налево, то ax == -1
+    public void Move(float ax, bool isBoost) { // Движение игрока, "ax" - это направление например если налево, то ax == -1
 
-        Vector3 direction = transform.right * ax; 
-        transform.position = Vector3.Lerp(transform.position, transform.position + direction, moveSpeed * Time.deltaTime);
+        this.isBoost = isBoost;
+        Vector3 direction = transform.right * ax;
+        if (isBoost && isGround()){
+            transform.position = Vector3.Lerp(transform.position, transform.position + direction, moveSpeed_2X * Time.deltaTime);
+        }
+        else {
+            transform.position = Vector3.Lerp(transform.position, transform.position + direction, moveSpeed * Time.deltaTime);
+        }
 
         if ((ax > 0 && transform.localScale.x < 0) || (ax < 0 && transform.localScale.x > 0)) // Поворот персонажа
         {
@@ -33,8 +43,18 @@ public class Movement : MonoBehaviour {
 
     public void Jump() {
 
-        if (isGround()) { 
-            GetComponent<Rigidbody2D>().AddForce(transform.up * jumpForce, ForceMode2D.Impulse);
+        if (isGround()) {
+            if (GetComponent<Head>().haveHead){
+                if (isBoost){
+                    GetComponent<Rigidbody2D>().AddForce(transform.up * (jumpForce_haveHead + BoostForce_forJump), ForceMode2D.Impulse);
+                }
+                else {
+                    GetComponent<Rigidbody2D>().AddForce(transform.up * jumpForce_haveHead, ForceMode2D.Impulse);
+                }
+            }
+            else {
+                GetComponent<Rigidbody2D>().AddForce(transform.up * jumpForce_NotHaveHead, ForceMode2D.Impulse);
+            }
         }
 
     }
@@ -52,10 +72,11 @@ public class Movement : MonoBehaviour {
         return j > 0; // Дает true если j больше 0
     }
 
-    public void Climb(float ax) // Движение вверх или низ, по лестнице
-    {
+    public void Climb(float ax) { // Движение вверх или низ, по лестнице
+
         Vector3 direction = transform.up * ax;
         transform.position = Vector3.Lerp(transform.position, transform.position + direction, climbSpeed * Time.deltaTime);
+
     }
 
 }

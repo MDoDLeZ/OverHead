@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Platform
   - PlaceHook
+  - Stairs
   layers:
   - Default
   - TransparentFX

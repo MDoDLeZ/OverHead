@@ -5,7 +5,7 @@ public class Head : MonoBehaviour {
     public Transform circleTarget;
     public Transform pos_Head;
     public float radCir;
-    private bool haveHead;
+    public bool haveHead;
 
     private void Start() {
 
