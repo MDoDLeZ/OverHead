@@ -7,6 +7,16 @@ public class Head : MonoBehaviour {
     public float radCir;
     public bool haveHead;
 
+
+    Vector2 directionImpulse;//Направление вектора броска головы
+
+    float horizontal;//Направление игрока
+
+    [SerializeField]
+    float throwForce;//сила броска головы
+
+    Movement moveScript;
+
     private void Start() {
 
         if (transform.Find("Head") != null) { // Если игрок имеет дочерний объект "Head"
@@ -16,7 +26,16 @@ public class Head : MonoBehaviour {
         else
             haveHead = false;
 
+        moveScript = GetComponent<Movement>();
     }
+
+
+    private void Update()
+    {
+        horizontal = Input.GetAxisRaw("Horizontal");
+        DirectionHead(horizontal);
+    }
+
 
     public void Drop() { // Бросить голову
 
@@ -28,8 +47,11 @@ public class Head : MonoBehaviour {
             head.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
             haveHead = false;
 
+            //Импульс при броске
+            head.GetComponent<Rigidbody2D>().AddForce(directionImpulse * throwForce, ForceMode2D.Impulse);
         }
 
+        
     }
 
     public void Take() { // Взять голову
@@ -49,6 +71,51 @@ public class Head : MonoBehaviour {
             }
 
         }
+
+    }
+
+
+
+    void DirectionHead(float h)
+    {//Направление вектора броска головы
+
+        if (h < 0 && moveScript.isGround())//налево
+        {
+
+            directionImpulse = Vector2.left;
+
+        }
+
+        if (h > 0 && moveScript.isGround())//направо
+        {
+
+            directionImpulse = Vector2.right;
+
+        }
+
+
+        if (h > 0 && !moveScript.isGround())//вверх направо
+        {
+
+            directionImpulse = Vector2.up + Vector2.right;
+
+        }
+
+
+        if (h < 0 && !moveScript.isGround())//вверх налево
+        {
+
+            directionImpulse = Vector2.up + Vector2.left;
+
+        }
+
+        if (h == 0)//стоит или прыгает
+        {
+
+            directionImpulse = Vector2.up;
+
+        }
+
 
     }
 
