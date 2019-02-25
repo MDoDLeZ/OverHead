@@ -2,9 +2,8 @@
 
 public class Movement : MonoBehaviour {
 
-    public float moveSpeed;
+    public float moveSpeed_1X;
     public float moveSpeed_2X;
-    public float moveSpeed1;
     public float jumpForce_haveHead;
     public float jumpForce_NotHaveHead;
     public float BoostForce_forJump;
@@ -12,56 +11,56 @@ public class Movement : MonoBehaviour {
     public float climbSpeed;
     public Transform circleTarget;
     public LayerMask all_but_Player; // Все слои кроме слоя игрока для поиска вокруг объектов
+    private float moveSpeed;
     private bool isBoost;
     
     void Start () {
-        moveSpeed1 = moveSpeed;
-
+        
     }
 
     public void Move(float ax, bool isBoost) { // Движение игрока, "ax" - это направление например если налево, то ax == -1
 
-        /* this.isBoost = isBoost;
-         Vector3 direction = transform.right * ax;
-         if (isBoost && isGround()){
-             transform.position = Vector3.Lerp(transform.position, transform.position + direction, moveSpeed_2X * Time.deltaTime);
-         }
-         else {
-             transform.position = Vector3.Lerp(transform.position, transform.position + direction, moveSpeed * Time.deltaTime);
-         }
+         this.isBoost = isBoost;
+
+         //Vector3 direction = transform.right * ax;
+         //if (isBoost && isGround()){
+         //    transform.position = Vector3.Lerp(transform.position, transform.position + direction, moveSpeed_2X * Time.deltaTime);
+         //}
+         //else {
+         //    transform.position = Vector3.Lerp(transform.position, transform.position + direction, moveSpeed * Time.deltaTime);
+         //}
 
          if ((ax > 0 && transform.localScale.x < 0) || (ax < 0 && transform.localScale.x > 0)) // Поворот персонажа
          {
              transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
-         }*/
+         }
 
         
-        if (isBoost && isGround())
-        {
+         if (isBoost && isGround())
+         {
             moveSpeed = moveSpeed_2X;
-        }
-        else {
-            moveSpeed = moveSpeed1;
-        }
+         }
+         else {
+            moveSpeed = moveSpeed_1X;
+         }
 
-        transform.Translate(ax*moveSpeed*Time.deltaTime,0,0);
+         transform.Translate(ax * moveSpeed * Time.deltaTime, 0, 0);
 
+         if (ax != 0) { // Если игрок движется, то отключаем хук
 
-
-
-        if (ax != 0) { // Если игрок движется, то отключаем хук
             GetComponent<LineRenderer>().enabled = false; 
             GetComponent<TargetJoint2D>().enabled = false;
             GetComponent<Hook>().isPressed = false;
-        }
+
+         }
 
     }
 
     public void Jump() {
 
         if (isGround()) {
-            if (GetComponent<Head>().haveHead){
-                if (isBoost){
+            if (GetComponent<Head>().haveHead){ // Если есть голова
+                if (isBoost){ // Если нажат буст кнопка
                     GetComponent<Rigidbody2D>().AddForce(transform.up * (jumpForce_haveHead + BoostForce_forJump), ForceMode2D.Impulse);
                 }
                 else {
@@ -80,9 +79,7 @@ public class Movement : MonoBehaviour {
         Collider2D[] gh = Physics2D.OverlapCircleAll(circleTarget.position, radCir, all_but_Player);
         int j = 0;
         for (int i = 0; i < gh.Length; i++) {
-            if (gh[i].tag == "Platform") {
-                j++;
-            }
+            j++;
         }
 
         return j > 0; // Дает true если j больше 0
